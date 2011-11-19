@@ -1,0 +1,9 @@
+<h1>All users</h1>
+
+<%= will_paginate %>
+
+<ul class="users">
+			<%= render @users %>    <!-- automatically looks for partial named user and iterates over each User obj -->
+</ul>
+
+<%= will_paginate %>
