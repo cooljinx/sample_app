@@ -22,6 +22,10 @@ module SessionsHelper
     current_user = nil
   end
   
+  def authenticate    # used by Users controller and Microposts controller
+    deny_access unless signed_in?
+  end
+  
   def deny_access
     store_location          # for friendly forwarding
     redirect_to signin_path, :notice => "Please sign in to access this page."

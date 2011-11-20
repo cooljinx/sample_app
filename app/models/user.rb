@@ -27,6 +27,9 @@ class User < ActiveRecord::Base
                                     
   before_save :encrypt_password
   
+  has_many :microposts, :dependent => :destroy
+
+  
   # Return true if the user's password matches the submitted password.
   def has_password?(submitted_password)
       # Compare encrypted_password with the encrypted version of
@@ -46,6 +49,12 @@ class User < ActiveRecord::Base
       # same as return nil if user.nil?
       #               return user if user.salt == cookie_salt
   end
+  
+  def feed
+      
+      Micropost.where("user_id = ?", id)
+  end
+
   
   private
   
