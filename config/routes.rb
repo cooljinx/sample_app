@@ -1,8 +1,14 @@
 SampleApp::Application.routes.draw do
 
-  resources :users
+  resources :users do
+    member do
+      get :following, :followers  # to match /users/i/following and /users/1/followers on a GET request
+    end
+  end
+
   resources :sessions, :only => [:new, :create, :destroy]
   resources :microposts, :only => [:create, :destroy]
+  resources :relationships, :only => [:create, :destroy]
   
   match '/contact', :to => 'pages#contact'
   match '/about', :to => 'pages#about'

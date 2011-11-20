@@ -28,6 +28,19 @@ class User < ActiveRecord::Base
   before_save :encrypt_password
   
   has_many :microposts, :dependent => :destroy
+  
+  has_many :relationships, :foreign_key => "follower_id",
+                                            :dependent => :destroy
+                                            
+  has_many :following, :through => :relationships, :source => :followed  # has_many :through relationship.. could have written ':followeds'
+                                                                                                                # that is not natural, hence overriding with ':following'
+  
+  has_many :reverse_relationships, :foreign_key => "followed_id",
+                                                          :class_name => "Relationship", # have to include class_name, else will look for a class named
+                                                          :dependent => :destroy              #   ReverseRelationships
+                                                          
+  has_many :followers, :through => :reverse_relationships, :source => :follower
+                                                                                                                
 
   
   # Return true if the user's password matches the submitted password.
@@ -50,9 +63,20 @@ class User < ActiveRecord::Base
       #               return user if user.salt == cookie_salt
   end
   
-  def feed
-      
-      Micropost.where("user_id = ?", id)
+  def feed      
+      Micropost.from_users_followed_by(self)
+  end
+  
+  def following?(followed)
+    relationships.find_by_followed_id(followed)
+  end
+
+  def follow!(followed)
+    relationships.create!(:followed_id => followed.id)
+  end
+  
+  def unfollow!(followed)
+    relationships.find_by_followed_id(followed).destroy
   end
 
   
